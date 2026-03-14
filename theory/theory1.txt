@@ -1,0 +1,238 @@
+╔══════════════════════════════════════════════════════╗
+║             JOHN THE RIPPER – COMPLETE GUIDE        ║
+╚══════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT IS JOHN THE RIPPER?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+John the Ripper (JtR) is an open-source OFFLINE password auditing tool.
+
+• Used for security testing
+• Popular in CTF competitions
+• Supports password recovery & auditing
+• Works on Linux, Windows & macOS
+
+Purpose:
+It helps security professionals test password strength
+by attempting to crack password hashes.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CORE FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Supports 100+ hash formats
+• CPU & GPU acceleration
+• Wordlist (Dictionary) attacks
+• Brute-force attacks
+• Custom rule engine support
+• Session recovery support
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BRUTE FORCE vs DICTIONARY ATTACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dictionary Attack:
+  → Uses predefined wordlists
+  → Faster
+  → Effective against weak passwords
+
+Brute Force Attack:
+  → Tries every possible combination
+  → Slower
+  → Guaranteed (eventually) if password length is small
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1) CRACKING PASSWORD HASHES (MD5 Example)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Basic Syntax:
+  john <hashfile>
+
+Example:
+  john hashes.txt
+  output :1234 (?)
+
+Specify Format:
+  john --format=raw-md5 hash.txt
+
+   "--format=raw-md5" specifies the hash format (MD5 in this case).
+     
+     - "hash.txt" is the file containing the hashes to crack.
+
+
+View Cracked Passwords:
+  john --show --format=raw-md5 hash.txt
+
+Remove Previous Session: allowing you to re-crack the same hash.
+
+  rm ~/.john/john.pot 
+
+How It Works:
+  1. Converts wordlist entries into hashes
+  2. Compares generated hash with target hash
+  3. If matched → Password recovered
+
+Defense:
+  • Use long, complex passwords
+  • Avoid common dictionary words
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2) CRACKING NTLM HASHES (Windows)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NTLM:
+  → Windows authentication hash
+
+Stored In:
+  SAM Database
+
+Location:
+  C:\Windows\System32\config\SAM
+  Registry: HKEY_LOCAL_MACHINE\SAM
+
+Important:
+  SAM file is locked while system is running.
+  Hashes are encrypted using SYSKEY from SYSTEM hive.
+
+Required Files to Crack Offline:
+  • SAM file
+  • SYSTEM file
+  
+<> How to Extract Hashes from SAM
+-------------------------------
+     
+To extract NTLM hashes, an attacker must have administrative or SYSTEM-level privileges. 
+
+Common Techniques:
+
+ SAMdump2: A Linux tool that takes a saved SAM file and the corresponding
+           SYSTEM file to decrypt the hashes.
+
+ Registry Export: Manually saving the hives using command prompt
+                  and extracting them offline
+
+ commands:        
+  > reg save HKLM\SAM sam.hive
+  > reg save HKLM\SYSTEM system.hive
+
+Command:
+  john --format=NT ntlm.txt
+
+
+Extracting NTLM Hashes (Admin Required):
+
+Defense Mechanisms:
+  • Disable NTLM if possible
+  • Enable Multi-Factor Authentication (MFA)
+  • Use Windows Credential Guard
+  • Enforce strong passwords
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3) CRACKING LINUX HASHES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Linux stores password hashes in:
+
+  /etc/shadow
+
+ How to Take/Extract Hashes from /etc/shadow
+   -------------------------------------------
+
+ To crack passwords using John the Ripper, it is best to combine
+ /etc/passwd (for usernames) and /etc/shadow (for hashes) using the
+ unshadow tool.
+ 
+command:
+  sudo unshadow /etc/passwd /etc/shadow > myhashes.txt
+
+     (extracted hash is stored in myhashes.txt)
+
+Then crack:
+
+  john --format=sha512crypt myhashes.txt
+
+   sample output:passwd123 (?)
+
+How It Works:
+  → Extract hashes
+  → Attempt dictionary/brute-force attack
+  → Recover weak passwords
+
+
+Defense:
+  • Enforce strong password policies
+  • Disable unnecessary root access
+  
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4) CRACKING ZIP PASSWORDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tools Required:
+  zip2john + john
+
+-zip2john converts the encrypted ZIP file into a specific hash format
+   by getting the hash format we can crack the password
+
+Step 1: Extract Hash
+
+  zip2john secret.zip > zip.txt
+
+Step 2: Crack Password
+  
+ john zip.txt
+
+ sample output :1234 (?)
+
+How It Works:
+  → Converts encrypted ZIP into hash format
+  → Applies dictionary/brute-force attack
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HASH GENERATION (Practice Section)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Syntax:
+  echo -n <Give word to make hash> | <hash_algorithm>
+
+MD5:
+  echo -n password | md5sum
+  Output:
+  5f4dcc3b5aa765d61d8327deb882cf99
+
+SHA1:
+  echo -n password | sha1sum
+  Output:
+  5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8
+
+SHA256:
+  echo -n "myPassword123!" | sha256sum
+  Output:
+  ef92b778ba9d3083652c77d29d89269784fe5f458e0a89d4fb983c271e29e92d
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPORTANT NOTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+John the Ripper is used for:
+
+  ✔ Ethical hacking
+  ✔ Security auditing
+  ✔ Password strength testing
+
+It must NOT be used for unauthorized access.
+
+Always practice legally in labs or CTF environments.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF THEORY MODULE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
