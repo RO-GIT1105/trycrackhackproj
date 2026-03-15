@@ -1,0 +1,88 @@
+
+==============================
+          ZPHISHER
+==============================
+
+WHAT IS ZPHISHER?
+
+Zphisher is a command-line tool that creates fake login pages that look
+like popular services (for example social media or email platforms).
+
+It hosts those pages on a local web server and can generate a public link
+using tunneling services.
+
+When someone opens the page, the tool can record information entered
+into the form.
+
+
+--------------------------------
+USES OF ZPHISHER
+--------------------------------
+
+1) SECURITY AWARENESS TRAINING
+------------------------------
+
+Organizations sometimes demonstrate how phishing attacks work so
+employees learn to recognize fake login pages and avoid falling
+for phishing scams.
+
+
+2) CYBERSECURITY EDUCATION
+--------------------------
+
+Students studying ethical hacking or penetration testing use tools
+like this in controlled lab environments to understand:
+
+- Social engineering attacks
+- Fake login page structure (HTML + PHP)
+- Credential harvesting techniques
+- How attackers deliver phishing links
+
+
+--------------------------------
+1) TO INSTALL ZPHISHER
+--------------------------------
+
+Download the Zphisher tool from GitHub.
+
+After downloading or cloning the repository,
+navigate to the Zphisher folder.
+
+To start Zphisher run the command:
+
+COMMAND:
+bash zphisher.sh
+
+
+--------------------------------
+2) PERFORMING A PHISHING TEST
+--------------------------------
+
+Step 1:
+Select which phishing website template you want.
+
+Step 2:
+Select the type of phishing page.
+
+Step 3:
+Choose the hosting option:
+- Localhost (to test on the same computer)
+- Cloudflared (to generate a public link for testing on another device)
+
+Step 4:
+After selecting the options, the tool generates a phishing link.
+
+
+SAMPLE OUTPUT
+-------------
+
+The tool displays a generated phishing link.
+
+When a user opens the link and enters login details,
+the entered information will appear in the terminal
+running the Zphisher tool.
+
+==============================
+END OF THEORY MODULE
+==============================
+

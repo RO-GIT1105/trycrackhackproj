@@ -1,0 +1,334 @@
+
+==============================
+NMAP ("NETWORK MAPPER")
+==============================
+
+WHAT IS Nmap?
+
+Nmap is a free, open-source tool used for network discovery and security auditing.
+
+It sends specialized packets to analyze target systems and identify:
+- Active hosts
+- Open ports
+- Running services
+- Operating systems
+
+It is widely used in:
+- Cybersecurity
+- Penetration testing
+- Network administration
+
+
+--------------------------------
+1) PING SCAN (HOST DISCOVERY)
+--------------------------------
+
+Also known as a "no port scan". It identifies live hosts without scanning
+for open ports.
+
+It sends ICMP Echo Requests and TCP packets to check if a host is responsive,
+making it fast and low-noise.
+
+SYNTAX:
+nmap -sn <target>
+
+Example:
+nmap -sn 192.168.1.10
+
+OUTPUT:
+
+Starting Nmap 7.94 ( https://nmap.org )
+Nmap scan report for 192.168.1.10
+Host is up (0.0020s latency).
+MAC Address: 08:00:27:AB:CD:EF (Oracle VirtualBox)
+
+Nmap done: 256 IP addresses (3 hosts up) scanned in 5.12 seconds
+
+
+Example (Scanning a subnet):
+
+nmap -sn 192.168.1.10/24
+
+This scans the entire subnet containing 192.168.1.10,
+which includes 256 IP addresses (192.168.1.0 → 192.168.1.255)
+
+
+HOST STATUS
+
+Host Up
+-------
+The device is active and reachable on the network.
+
+Meaning:
+The target is powered on and connected. Nmap can now perform
+deeper scans like port scanning or version detection.
+
+
+Host Down
+---------
+The device is unreachable or not responding.
+
+Possible reasons:
+- Device is powered off
+- Device is disconnected from the network
+- Firewall is blocking probes (most common)
+
+
+--------------------------------
+2) STEALTH SCAN
+--------------------------------
+
+A Stealth Scan (TCP SYN Scan) does not complete the full TCP handshake,
+making it harder to detect.
+
+How Normal TCP Connection Works
+
+1. SYN  →
+2. SYN-ACK  ←
+3. ACK  →
+
+Stealth Scan Process
+
+1. SYN  →
+2. SYN-ACK  ←  (if port is open)
+3. RST  →  (connection terminated)
+
+Since the handshake is never completed, it is harder to log.
+
+SYNTAX:
+nmap -sS <target>
+
+Example:
+nmap -sS 192.168.1.10
+
+OUTPUT:
+
+Starting Nmap 7.94
+Nmap scan report for 192.168.1.10
+Host is up (0.0010s latency).
+Not shown: 997 closed tcp ports (reset)
+
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+80/tcp   open   http
+443/tcp  open   https
+
+Nmap done: 1 IP address (1 host up) scanned in 3.21 seconds
+
+
+INFORMATION OBTAINED
+- Host status
+- Port number
+- Running service
+
+
+--------------------------------
+3) VERSION SCANNING (-sV)
+--------------------------------
+
+Determines what service is running on a port and its version number.
+
+This is important for identifying outdated software that may contain
+known vulnerabilities.
+
+SYNTAX:
+nmap -sV <target>
+
+Example:
+nmap -sV 192.168.1.10
+
+OUTPUT:
+
+Starting Nmap 7.94
+Nmap scan report for 192.168.1.10
+Host is up (0.0010s latency).
+Not shown: 997 closed tcp ports (reset)
+
+PORT     STATE  SERVICE  VERSION
+22/tcp   open   ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.3
+80/tcp   open   http     Apache httpd 2.4.41 ((Ubuntu))
+443/tcp  open   https    Apache httpd 2.4.41
+
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Nmap done: 1 IP address (1 host up) scanned in 8.50 seconds
+
+
+INFORMATION OBTAINED
+- Host status
+- Port number
+- Service name
+- Exact version
+
+
+--------------------------------
+4) OS SCANNING (-O)
+--------------------------------
+
+Uses TCP/IP fingerprinting to guess the operating system
+running on the target machine.
+
+Examples:
+- Linux
+- Windows
+- macOS
+
+SYNTAX:
+nmap -O <target>
+
+Example:
+nmap -O 192.168.1.10
+
+OUTPUT:
+
+Starting Nmap 7.94
+Nmap scan report for 192.168.1.10
+Host is up (0.0020s latency).
+Not shown: 998 closed ports
+
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+OS details: Linux 5.4 - 5.8
+Network Distance: 1 hop
+
+
+WHY THIS IS IMPORTANT
+
+Attack frameworks such as:
+- Metasploit
+- Exploit-DB
+- Searchsploit
+
+use OS information to identify possible exploits.
+
+
+--------------------------------
+5) AGGRESSIVE SCAN (-A)
+--------------------------------
+
+A comprehensive scan that enables multiple detection features.
+
+It includes:
+- OS Detection (-O)
+- Version Detection (-sV)
+- Script Scanning (-sC)
+- Traceroute (--traceroute)
+
+SYNTAX:
+nmap -A <target>
+
+Example:
+nmap -A 192.168.1.10
+
+OUTPUT:
+
+PORT     STATE SERVICE  VERSION
+22/tcp   open  ssh      OpenSSH 8.2p1
+80/tcp   open  http     Apache 2.4.41
+
+OS details: Linux 5.4 - 5.8
+Service Info: OS: Linux
+
+TRACEROUTE
+1  192.168.1.1
+2  192.168.1.10
+
+
+SAVING SCAN RESULTS
+-------------------
+
+Instead of losing results after closing the terminal,
+you can save them.
+
+Example:
+
+nmap -A 192.168.1.10 -oN result.txt
+
+Results will be saved in:
+result.txt
+
+
+--------------------------------
+6) SCANNING FROM A FILE
+--------------------------------
+
+Purpose:
+Scan multiple targets stored inside a text file.
+
+Example file:
+
+targets.txt
+
+192.168.1.10
+192.168.1.20
+
+
+SYNTAX:
+nmap -iL targets.txt
+
+OUTPUT:
+
+Nmap scan report for 192.168.1.10
+Host is up
+
+Nmap scan report for 192.168.1.20
+Host is up
+
+
+--------------------------------
+GETTING IP ADDRESS OF A WEBSITE
+--------------------------------
+
+SYNTAX:
+nslookup <website>
+
+Example:
+nslookup google.com
+
+OUTPUT:
+
+Server: 192.168.29.1
+Address: 192.168.29.1#53
+
+Non-authoritative answer:
+
+Name: google.com
+Address: 142.251.220.46
+
+Name: google.com
+Address: 2404:6800:4002:80e::2000
+
+
+EXPLANATION
+
+142.251.220.46
+This is the IPv4 address. This is commonly used for Nmap scans.
+
+Example:
+nmap 142.251.220.46
+
+
+2404:6800:4002:80e::2000
+This is the IPv6 address (newer format).
+
+
+192.168.29.1
+This is your local router or DNS server that answered the request,
+not Google's server.
+
+
+PRO TIP
+
+In Kali Linux you can scan a domain directly.
+
+Example:
+
+nmap -sn google.com
+
+Nmap automatically resolves the IP address.
+
+==============================
+END OF THEORY MODULE
+==============================

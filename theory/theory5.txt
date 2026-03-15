@@ -1,0 +1,103 @@
+
+==============================
+          CRUNCH
+==============================
+
+WHAT IS CRUNCH?
+
+Crunch is a program that creates lists of possible words or passwords
+based on rules you define, such as:
+
+- Minimum and maximum length
+- Character sets (letters, numbers, symbols)
+- Specific patterns
+
+It generates all possible combinations according to those settings.
+
+
+It is widely used in:
+- Wordlist generation
+- Pattern-based wordlists
+- Testing password strength
+
+
+--------------------------------
+1) GENERATION OF WORDLIST
+--------------------------------
+
+SYNTAX:
+crunch <min_length> <max_length> [characters] [options]
+
+min_length  → minimum password length
+max_length  → maximum password length
+characters  → character set to use
+
+
+Example:
+crunch 3 3 abc -o list.txt
+
+
+OUTPUT:
+
+aaa
+aab
+aac
+aba
+abb
+abc
+...
+
+This generates all combinations of 3 letters using a, b, and c
+and saves them in list.txt.
+
+
+TO DELETE A WORDLIST
+
+COMMAND:
+rm <wordlist_name>
+
+
+--------------------------------
+2) PATTERN-BASED GENERATION
+--------------------------------
+
+Crunch can generate passwords using specific patterns.
+
+Pattern symbols:
+
+@  → lowercase letters
+,  → uppercase letters
+%  → numbers
+^  → special characters
+
+
+SYNTAX:
+crunch <min> <max> -t <pattern> [options]
+
+min      → minimum length of the word
+max      → maximum length of the word
+-t       → specifies the pattern
+
+
+Example:
+crunch 4 4 -t @@%% -o result.txt
+
+
+OUTPUT:
+
+aa00
+aa01
+aa02
+aa03
+...
+
+
+This generates a wordlist where:
+- The first two characters are lowercase letters
+- The last two characters are numbers
+
+The results are saved in result.txt.
+
+==============================
+END OF THEORY MODULE
+==============================

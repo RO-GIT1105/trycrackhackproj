@@ -238,7 +238,7 @@ class MissionTwoOutro(QWidget):
         layout.addWidget(self.video)
 
     def start(self):
-        self.video.play(asset("assets/videos/mission1.mp4"))
+        self.video.play(asset("assets/videos/m2.2.mp4"))
 
     def finish(self):
         self.main.show_complete_screen(
@@ -2270,33 +2270,32 @@ class LearningSession(QWidget):
         self.q_index = 0
         self.score = 0
 
-        self.layout = QVBoxLayout(self)
+        main_layout = QVBoxLayout(self)
 
-        # ---------------- TITLE ----------------
-        self.title = QLabel("LEARNING SESSION")
-        self.title.setAlignment(Qt.AlignCenter)
-        self.title.setStyleSheet("color:cyan;font-size:40px;font-weight:bold")
+        # TITLE
+        title = QLabel("LEARNING SESSION")
+        title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("color:cyan;font-size:40px;font-weight:bold")
+        main_layout.addWidget(title)
 
-        self.layout.addWidget(self.title)
-
-        # ---------------- STACK ----------------
+        # STACK
         self.stack = QStackedWidget()
-        self.layout.addWidget(self.stack)
+        main_layout.addWidget(self.stack)
 
-        # =====================================================
+        # =================================================
         # PAGE 1 : MODULE MENU
-        # =====================================================
+        # =================================================
 
         self.menu_page = QWidget()
         menu_layout = QVBoxLayout(self.menu_page)
         menu_layout.setAlignment(Qt.AlignCenter)
 
         modules = [
-            ("Admin Password Cracking","admin"),
-            ("Network Scanning","network"),
-            ("Brute Forcing","brute"),
-            ("Phishing","phishing"),
-            ("CRC Hash Cracking","crc")
+            ("   Password Cracking   ","admin"),
+            ("   Network Scanning   ","network"),
+            ("   Brute Forcing   ","brute"),
+            ("   Phishing   ","phishing"),
+            ("   Password generation   ","crunch")
         ]
 
         for name,key in modules:
@@ -2318,28 +2317,68 @@ class LearningSession(QWidget):
             """)
 
             btn.clicked.connect(lambda _,k=key:self.open_module(k))
-
             menu_layout.addWidget(btn)
 
-        self.stack.addWidget(self.menu_page)
+        # TERMINAL BUTTON
+        term_btn = QPushButton("TERMINAL")
+        term_btn.setFixedHeight(50)
 
-        # =====================================================
+        term_btn.setStyleSheet("""
+        QPushButton{
+            background:#111;
+            color:cyan;
+            font-size:18px;
+            border:2px solid cyan;
+        }
+        QPushButton:hover{
+            background:cyan;
+            color:black;
+        }
+        """)
+
+        term_btn.clicked.connect(self.open_terminal)
+
+        menu_layout.addWidget(term_btn)
+
+        # BACK TO MAIN WINDOW
+        back_main = QPushButton("BACK TO MAIN")
+        back_main.setFixedHeight(50)
+
+        back_main.setStyleSheet("""
+        QPushButton{
+        background:#111;
+        color:red;
+        font-size:18px;
+        border:2px solid red;
+        }
+        QPushButton:hover{
+        background:red;
+        color:black;
+        }
+        """)
+
+        back_main.clicked.connect(self.go_main)
+
+        menu_layout.addWidget(back_main)
+
+        self.stack.addWidget(self.menu_page)
+        # =================================================
         # PAGE 2 : THEORY
-        # =====================================================
+        # =================================================
 
         self.theory_page = QWidget()
         theory_layout = QVBoxLayout(self.theory_page)
 
         self.theory_text = QPlainTextEdit()
         self.theory_text.setReadOnly(True)
+
         self.theory_text.setStyleSheet(
             "background:black;color:lime;font-family:Consolas;font-size:16px"
         )
 
         theory_layout.addWidget(self.theory_text)
 
-        # ---------- BUTTON BAR ----------
-
+        # BUTTON BAR
         button_bar = QHBoxLayout()
 
         self.menu_btn = QPushButton("MENU")
@@ -2380,46 +2419,105 @@ class LearningSession(QWidget):
 
         theory_layout.addLayout(button_bar)
 
-        self.stack.addWidget(self.theory_page)
         self.menu_btn.clicked.connect(self.go_menu)
         self.mcq_btn.clicked.connect(self.start_mcq)
 
-        # =====================================================
+        self.stack.addWidget(self.theory_page)
+        # =================================================
         # PAGE 3 : MCQ
-        # =====================================================
+        # =================================================
 
         self.mcq_page = QWidget()
         mcq_layout = QVBoxLayout(self.mcq_page)
 
-        self.question_label = QLabel()
+        # QUESTION LABEL
+        self.question_label = QLabel("")
         self.question_label.setWordWrap(True)
         self.question_label.setStyleSheet("color:white;font-size:20px")
-
         mcq_layout.addWidget(self.question_label)
 
-        self.options_group = QButtonGroup()
-
+        # RADIO BUTTONS
+        self.options_group = QButtonGroup(self)
         self.option_buttons = []
 
         for i in range(5):
-
             rb = QRadioButton()
-            rb.setStyleSheet("color:lime;font-size:16px")
-            self.options_group.addButton(rb,i)
-            mcq_layout.addWidget(rb)
+            rb.setStyleSheet("""
+                QRadioButton{
+                color:lime;
+                font-size:16px;
+                }
 
+                QRadioButton::indicator{
+                width:18px;
+                height:18px;
+                }
+
+                QRadioButton::indicator:unchecked{
+                border:2px solid lime;
+                background:black;
+                }
+
+                QRadioButton::indicator:checked{
+                border:2px solid lime;
+                background:lime;
+                }
+                """)
+
+            self.options_group.addButton(rb, i)
             self.option_buttons.append(rb)
 
+            mcq_layout.addWidget(rb)
+
+        # FEEDBACK
+        self.feedback = QLabel("")
+        self.feedback.setStyleSheet("color:cyan;font-size:16px")
+        mcq_layout.addWidget(self.feedback)
+
+        # BUTTON ROW
+        btn_row = QHBoxLayout()
+
+        self.submit_btn = QPushButton("SUBMIT")
+        self.submit_btn.setStyleSheet("""
+        QPushButton{
+        background:#111;
+        color:lime;
+        font-size:16px;
+        border:2px solid lime;
+        }
+        QPushButton:hover{
+        background:lime;
+        color:black;
+        }
+        """)
+
         self.next_btn = QPushButton("NEXT")
+        self.next_btn.setStyleSheet("""
+        QPushButton{
+        background:#111;
+        color:cyan;
+        font-size:16px;
+        border:2px solid cyan;
+        }
+        QPushButton:hover{
+        background:cyan;
+        color:black;
+        }
+        """)
+
+        self.submit_btn.clicked.connect(self.check_answer)
         self.next_btn.clicked.connect(self.next_question)
 
-        mcq_layout.addWidget(self.next_btn)
+        btn_row.addWidget(self.submit_btn)
+        btn_row.addWidget(self.next_btn)
+
+        mcq_layout.addLayout(btn_row)
 
         self.stack.addWidget(self.mcq_page)
 
-        # =====================================================
+        # =================================================
         # PAGE 4 : RESULT
-        # =====================================================
+        # =================================================
 
         self.result_page = QWidget()
         result_layout = QVBoxLayout(self.result_page)
@@ -2428,143 +2526,159 @@ class LearningSession(QWidget):
         self.result_label.setAlignment(Qt.AlignCenter)
         self.result_label.setStyleSheet("color:cyan;font-size:28px")
 
+        back_btn = QPushButton("MENU")
+        back_btn.setFixedHeight(40)
+
+        back_btn.setStyleSheet("""
+        QPushButton{
+        background:#111;
+        color:orange;
+        font-size:16px;
+        border:2px solid orange;
+        }
+        QPushButton:hover{
+        background:orange;
+        color:black;
+        }
+        """)
+
+        back_btn.clicked.connect(self.go_menu)
+
         result_layout.addWidget(self.result_label)
-
-        self.menu_btn = QPushButton("BACK TO MODULES")
-        self.menu_btn.clicked.connect(self.go_menu)
-
-        result_layout.addWidget(self.menu_btn)
-
+        result_layout.addWidget(back_btn)
         self.stack.addWidget(self.result_page)
+        # =================================================
+        # PAGE 5 : TERMINAL
+        # =================================================
 
-        # =====================================================
+        self.terminal_page = QWidget()
+        term_layout = QVBoxLayout(self.terminal_page)
+
+        self.terminal_output = QPlainTextEdit()
+        self.terminal_output.setReadOnly(True)
+
+        self.terminal_output.setStyleSheet(
+            """
+            background:#300030;
+            color:white;
+            font-family:Consolas;
+            font-size:14px;
+            """
+            )
+
+        self.terminal_input = QLineEdit()
+        self.terminal_input.setStyleSheet(
+            """
+            background:#300030;
+            color:white;
+            font-family:Consolas;
+            font-size:14px;
+            """
+            )
+
+        self.terminal_input.returnPressed.connect(self.run_command)
+
+        term_layout.addWidget(self.terminal_output)
+        term_layout.addWidget(self.terminal_input)
+
+        menu_btn = QPushButton("MENU")
+        menu_btn.setFixedHeight(40)
+
+        menu_btn.setStyleSheet("""
+        QPushButton{
+        background:#111;
+        color:orange;
+        font-size:16px;
+        border:2px solid orange;
+        }
+        QPushButton:hover{
+        background:orange;
+        color:black;
+        }
+        """)
+
+        menu_btn.clicked.connect(self.go_menu)
+
+        term_layout.addWidget(menu_btn)
+
+        self.stack.addWidget(self.terminal_page)
+
+        # =================================================
+        # THEORY FILE MAP
+        # =================================================
+
+        self.theory_files = {
+
+        "admin":"theory/theory1.txt",
+        "network":"theory/theory2.txt",
+        "brute":"theory/theory3.txt",
+        "phishing":"theory/theory4.txt",
+        "crunch":"theory/theory5.txt"
+
+        }
+
+        # =================================================
         # MCQ DATABASE
-        # =====================================================
+        # =================================================
 
         self.mcq_data = {
 
         "admin":[
-        {"q":"Where are Linux password hashes stored?",
-        "o":["/etc/passwd","/etc/shadow","/var/pass","/tmp/hash","/root/pass"],
-        "a":1},
-
-        {"q":"Which tool cracks password hashes?",
-        "o":["Wireshark","John the Ripper","Nmap","Hydra","Aircrack"],
-        "a":1},
-
-        {"q":"Dictionary attack uses?",
-        "o":["random keys","wordlists","rainbow tables","GPU","brute force"],
-        "a":1},
-
-        {"q":"Shadow file stores?",
-        "o":["password hashes","logs","network config","keys","tokens"],
-        "a":0},
-
-        {"q":"JtR recommended version?",
-        "o":["Lite","Enterprise","Jumbo","Core","Basic"],
-        "a":2}
+        {"q":"Where are Linux password hashes stored?","o":["/etc/passwd","/etc/shadow","/var/pass","/tmp/hash","/root/pass"],"a":1},
+        {"q":"Which tool cracks password hashes?","o":["Wireshark","John the Ripper","Nmap","Hydra","Aircrack"],"a":1},
+        {"q":"Dictionary attack uses?","o":["random keys","wordlists","rainbow tables","GPU","brute force"],"a":1},
+        {"q":"Shadow file stores?","o":["password hashes","logs","network config","keys","tokens"],"a":0},
+        {"q":"JtR recommended version?","o":["Lite","Enterprise","Jumbo","Core","Basic"],"a":2}
         ],
 
+        # NMAP
         "network":[
-        {"q":"Which tool scans networks?",
-        "o":["Nmap","John","Hydra","Burp","Metasploit"],
-        "a":0},
-
-        {"q":"Port scanning identifies?",
-        "o":["IPs","open ports","passwords","logs","files"],
-        "a":1},
-
-        {"q":"Default HTTP port?",
-        "o":["21","22","80","443","3306"],
-        "a":2},
-
-        {"q":"Default HTTPS port?",
-        "o":["80","21","22","443","53"],
-        "a":3},
-
-        {"q":"Nmap stands for?",
-        "o":["Network Mapper","Node Mapper","Network Monitor","Node Monitor","None"],
-        "a":0}
+        {"q":"What is the primary purpose of Nmap?","o":["Encrypting files","Network discovery and security auditing","Creating firewalls","Developing websites","Monitoring CPU"],"a":1},
+        {"q":"Which Nmap command is used for Ping Scan (Host Discovery)?","o":["nmap -sS <target>","nmap -A <target>","nmap -sn <target>","nmap -sV <target>","nmap -O <target>"],"a":2},
+        {"q":"What is the main feature of a Stealth Scan (-sS)?","o":["Completes full TCP handshake","Scans only UDP ports","Does not complete the full TCP handshake","Scans OS only","Captures packets"],"a":2},
+        {"q":"Which option is used to detect service version information?","o":["-O","-sV","-sn","-iL","-p"],"a":1},
+        {"q":"What does Aggressive Scan (-A) include?","o":["Only OS detection","Only port scanning","OS detection, version detection, script scanning, and traceroute","Only ping scan","Only version detection"],"a":2}
         ],
 
+        # GOBUSTER
         "brute":[
-        {"q":"Brute force attack means?",
-               "o":["guess all passwords","dictionary","phishing","spoofing","sniffing"],
-        "a":0},
-
-        {"q":"Tool for login brute forcing?",
-        "o":["Hydra","Wireshark","Burp","Hashcat","Tcpdump"],
-        "a":0},
-
-        {"q":"Brute force is?",
-        "o":["slow","fast","instant","offline","passive"],
-        "a":0},
-
-        {"q":"Brute force tries?",
-        "o":["random passwords","usernames","IPs","logs","files"],
-        "a":0},
-
-        {"q":"Defense against brute force?",
-        "o":["rate limit","increase ports","disable logs","none","spoof"],
-        "a":0}
+        {"q":"What is the primary purpose of Gobuster?","o":["Encrypt network traffic","Brute-force directories, files, and subdomains on a web server","Monitor CPU usage","Capture network packets","Scan WiFi"],"a":1},
+        {"q":"Which Gobuster mode is used to discover hidden directories on a website?","o":["dns","vhost","dir","scan","host"],"a":2},
+        {"q":"Which option in Gobuster specifies the target URL?","o":["-w","-u","-t","-o","-d"],"a":1},
+        {"q":"Which Gobuster mode is used to enumerate subdomains?","o":["dir","dns","host","scan","file"],"a":1},
+        {"q":"Which option is used to provide a wordlist in Gobuster?","o":["-u","-w","-t","-d","-p"],"a":1}
         ],
 
+        # ZPHISHER
         "phishing":[
-        {"q":"Phishing targets?",
-        "o":["users","servers","routers","firewalls","logs"],
-        "a":0},
-
-        {"q":"Phishing uses?",
-        "o":["fake emails","encryption","hashing","VPN","firewall"],
-        "a":0},
-
-        {"q":"Goal of phishing?",
-        "o":["steal credentials","scan ports","encrypt data","patch systems","none"],
-        "a":0},
-
-        {"q":"Phishing is?",
-        "o":["social engineering","network scan","hash attack","brute force","sniffing"],
-        "a":0},
-
-        {"q":"Defense against phishing?",
-        "o":["user awareness","disable internet","block DNS","none","firewall"],
-        "a":0}
+        {"q":"What is the primary purpose of Zphisher?","o":["Encrypt network communications","Create phishing pages for security awareness demonstrations","Scan open ports on a network","Monitor system processes","Analyze packets"],"a":1},
+        {"q":"Zphisher is mainly used to simulate which type of cybersecurity attack?","o":["SQL Injection","Phishing attack","Buffer overflow attack","Denial-of-Service attack","Password cracking"],"a":1},
+        {"q":"Which programming language is commonly used in Zphisher templates to process captured data?","o":["Python","Java","PHP","C++","Go"],"a":2},
+        {"q":"Which feature of Zphisher helps expose a local phishing server to the internet?","o":["Firewall bypass","Port scanning","Port forwarding/tunneling service","Packet sniffing","VPN"],"a":2},
+        {"q":"Zphisher is typically run in which environment?","o":["Windows Command Prompt","Linux terminal environment","Android system settings","Database server console","Browser console"],"a":1}
         ],
 
-        "crc":[
-        {"q":"CRC stands for?",
-        "o":["Cyclic Redundancy Check","Code Random Check","Crypto Range Code","Cycle Random Code","None"],
-        "a":0},
-
-        {"q":"CRC is used for?",
-        "o":["error detection","encryption","authentication","password cracking","sniffing"],
-        "a":0},
-
-        {"q":"CRC commonly used in?",
-        "o":["networks","audio","video","storage","all"],
-        "a":4},
-
-        {"q":"CRC verifies?",
-        "o":["data integrity","passwords","IPs","users","files"],
-        "a":0},
-
-        {"q":"CRC is?",
-        "o":["hash function","cipher","protocol","virus","exploit"],
-        "a":0}
+        # CRUNCH
+        "crunch":[
+        {"q":"What is the primary purpose of Crunch?","o":["Generate custom wordlists","Scan open network ports","Capture network packets","Encrypt files","Monitor logs"],"a":0},
+        {"q":"Which option in Crunch is used to specify a pattern for generating words?","o":["-p","-t","-w","-u","-s"],"a":1},
+        {"q":"Which symbol in Crunch pattern represents lowercase letters?","o":["@ ",",","%","^","*"],"a":0},
+        {"q":"Which option in Crunch is used to save the generated wordlist to a file?","o":["-s","-o","-f","-c","-w"],"a":1},
+        {"q":"What do the first two parameters in the Crunch command represent?","o":["Minimum and maximum word length","IP address and port","Username and password","Directory and file name","Host and domain"],"a":0}
         ]
 
         }
 
-    # =====================================================
+    # =================================================
     # FUNCTIONS
-    # =====================================================
+    # =================================================
 
     def open_module(self,module):
 
         self.module = module
 
         try:
-            with open(f"theory/theory1.txt","r",encoding="utf-8") as f:
+            with open(self.theory_files[module],"r",encoding="utf-8") as f:
                 self.theory_text.setPlainText(f.read())
         except:
             self.theory_text.setPlainText("Theory file missing.")
@@ -2586,23 +2700,31 @@ class LearningSession(QWidget):
 
         q = self.questions[self.q_index]
 
-        self.question_label.setText(
-            f"Q{self.q_index+1}. {q['q']}"
-        )
+        self.question_label.setText(f"Q{self.q_index+1}. {q['q']}")
 
-        for i,opt in enumerate(q["o"]):
+        self.feedback.setText("")
+
+        for i, opt in enumerate(q["o"]):
             self.option_buttons[i].setText(opt)
             self.option_buttons[i].setChecked(False)
 
-    def next_question(self):
+    def check_answer(self):
 
         selected = self.options_group.checkedId()
 
         if selected == -1:
+            self.feedback.setText("Please select an option")
             return
 
-        if selected == self.questions[self.q_index]["a"]:
+        correct = self.questions[self.q_index]["a"]
+        correct_text = self.questions[self.q_index]["o"][correct]
+
+        if selected == correct:
+            self.feedback.setText("✔ Correct")
             self.score += 1
+        else:
+            self.feedback.setText(f"✘ Wrong | Correct Answer: {correct_text}")    
+    def next_question(self):
 
         self.q_index += 1
 
@@ -2618,8 +2740,43 @@ class LearningSession(QWidget):
             self.show_question()
 
     def go_menu(self):
-
         self.stack.setCurrentWidget(self.menu_page)
+    def go_main(self):
+        self.main.show_home()
+
+    # =================================================
+    # TERMINAL
+    # =================================================
+
+    def open_terminal(self):
+
+        self.terminal_output.clear()
+        self.terminal_output.appendPlainText("learningsession@trycrackhack:~$ ")
+        self.stack.setCurrentWidget(self.terminal_page)
+
+    def run_command(self):
+
+        cmd = self.terminal_input.text()
+        self.terminal_input.clear()
+
+        self.terminal_output.appendPlainText(f"> {cmd}")
+
+        responses = {
+
+        "nmap":"Scanning target...\nOpen ports found.",
+        "john":"Running John The Ripper...\nPassword cracked.",
+        "hydra":"Brute force started...",
+        "zphisher":"Launching phishing toolkit...",
+        "crc":"CRC verification completed."
+
+        }
+
+        if cmd in responses:
+            self.terminal_output.appendPlainText(responses[cmd])
+        else:
+            self.terminal_output.appendPlainText("Command not recognized")
+
+        self.terminal_output.appendPlainText("learningsession@trycrackhack:~$ ")
 # -------------------------------
 # MAIN WINDOW
 # -------------------------------
@@ -2650,7 +2807,8 @@ class TryCrackHack(QWidget):
         self.last_checkpoint = mission_id   # store progress in memory
         self.complete.configure(mission_id, next_widget)
         self.stack.setCurrentWidget(self.complete)
-
+    def show_home(self):
+        self.stack.setCurrentWidget(self.home)
     def __init__(self):
         super().__init__()
         self.story_finished = False
@@ -2672,9 +2830,7 @@ class TryCrackHack(QWidget):
         self.complete = MissionCompleteCommon(self)
 
         self.mission1_to_2_video = Mission1ToMission2Video(self)
-        self.mission2_intro = MissionTwoIntro(self)
-        self.mission2 = MissionTwoXorScreen(self)
-
+        
         # ---- MISSION 2 OBJECTS (ADD THIS BLOCK) ----
         self.mission2_intro = MissionTwoIntro(self)
         self.mission2 = MissionTwoXorScreen(self)
@@ -2778,7 +2934,7 @@ class HomeScreen(QWidget):
         self.main.resume_story()
     def open_learning(self):
         self.main.stack.setCurrentWidget(self.main.learning)
-
+    
 
 # -------------------------------
 # CUTSCENE SCREEN (VIDEO → TEXT)
@@ -2816,12 +2972,11 @@ class CutsceneScreen(QWidget):
         self.enter_shortcut2.activated.connect(self.on_enter_pressed)
     def on_enter_pressed(self):
         if self.allow_enter:
-            self.main.stack.setCurrentIndex(2)
-
+            self.main.stack.setCurrentWidget(self.main.mission1)
    
 
     def start_video(self):
-        self.video.play(asset("assets/videos/mission1.mp4"))
+        self.video.play(asset("assets/videos/m1.1.mp4"))
 
     def show_mission_text(self):
         self.video.hide()
@@ -3054,8 +3209,8 @@ class MissionOneStegoScreen(QWidget):
 
 
     def go_to_outro(self):
+        self.main.stack.setCurrentWidget(self.main.mission1_outro)
         self.main.mission1_outro.start_video()
-        self.main.stack.setCurrentIndex(3)
 class MissionOneOutro(QWidget):
     def __init__(self, main):
         super().__init__()
@@ -3069,7 +3224,7 @@ class MissionOneOutro(QWidget):
         layout.addWidget(self.video)
 
     def start_video(self):
-        self.video.play(asset("assets/videos/mission1.mp4"))
+        self.video.play(asset("assets/videos/m1.2.mp4"))
 
     def finish(self):
         self.main.show_complete_screen(
@@ -3092,7 +3247,7 @@ class Mission1ToMission2Video(QWidget):
         layout.addWidget(self.video)
 
     def start(self):
-        self.video.play(asset("assets/videos/mission1.mp4"))
+        self.video.play(asset("assets/videos/m2.1.mp4"))
 
     def finish(self):
         self.main.stack.setCurrentWidget(self.main.mission2_intro)

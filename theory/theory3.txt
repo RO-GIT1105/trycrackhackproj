@@ -1,0 +1,98 @@
+
+==============================
+          GOBUSTER
+==============================
+
+WHAT IS Gobuster?
+
+Gobuster is a fast command-line tool written in Go used for brute-forcing
+hidden directories, files, DNS subdomains, and virtual hosts on websites.
+
+It is widely used in:
+- Cybersecurity
+- Penetration testing
+- Network administration
+
+
+--------------------------------
+1) FINDING HIDDEN DIRECTORIES
+--------------------------------
+
+Hidden directories are folders on a web server that are not linked
+on the website but are still accessible if you know the path.
+
+Example directories
+-------------------
+/admin
+/backup
+/uploads
+
+
+SYNTAX:
+gobuster dir -u <target_url> -w <wordlist>
+
+Example:
+gobuster dir -u http://demo.testfire.net -w /usr/share/wordlists/dirb/common.txt
+
+
+OUTPUT:
+
+Gobuster will return a list of hidden directories such as:
+
+/admin
+/images
+/uploads
+/backup
+
+These directories may contain sensitive files or admin panels.
+
+
+--------------------------------
+2) DNS ENUMERATION
+--------------------------------
+
+DNS enumeration in Gobuster (gobuster dns) is a specialized mode
+used to brute-force subdomains of a target domain.
+
+This allows penetration testers and ethical hackers to identify
+hidden, unindexed, or forgotten subdomains.
+
+
+Example Domain Structure
+------------------------
+
+Main domain:
+example.com
+
+Possible subdomains:
+mail.example.com
+admin.example.com
+vpn.example.com
+dev.example.com
+
+
+SYNTAX:
+gobuster dns --domain <target_domain> -w <wordlist>
+
+
+Example:
+gobuster dns --domain megacorpone.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+
+
+OUTPUT:
+
+Gobuster will return discovered subdomains such as:
+
+admin.megacorpone.com
+mail.megacorpone.com
+vpn.megacorpone.com
+
+
+These subdomains may expose:
+- Admin panels
+- Internal services
+- Development environments
+
+==============================
+END OF THEORY MODULE
+==============================
